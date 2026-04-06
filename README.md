@@ -3,7 +3,7 @@
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
 ![Blazor](https://img.shields.io/badge/Blazor-WebAssembly-512BD4?logo=blazor)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Apps](https://img.shields.io/badge/apps-0-blue)
+![Apps](https://img.shields.io/badge/apps-1-blue)
 
 A collection of small, self-contained Blazor WebAssembly applications — built for the joy of it.
 
@@ -16,7 +16,7 @@ The measure of success is whether building it was fun.
 
 | App | Description |
 |-----|-------------|
-| *(more to come)* | |
+| SplitTheBill | Split a restaurant bill evenly across a group, with optional tip. |
 
 ---
 
@@ -25,11 +25,19 @@ The measure of success is whether building it was fun.
 No installation, no deployment. Just navigate into an app folder and run:
 
 ```bash
-cd app-name
+cd SplitTheBill
 dotnet run
 ```
 
 Then open your browser at the URL shown in the terminal.
+
+---
+
+## Tools
+
+| Tool | Description |
+|------|-------------|
+| [favicon-generator.html](favicon-generator.html) | Open in a browser to instantly generate and download a favicon from an emoji. |
 
 ---
 
