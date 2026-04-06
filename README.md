@@ -16,8 +16,8 @@ The measure of success is whether building it was fun.
 
 | App | Description |
 |-----|-------------|
-| SplitTheBill | Split a bill evenly across a group, with optional tip. |
-| FastClock | Railway operations fast clock. |
+| SplitTheBill | 💸 Split a bill evenly across a group, with optional tip. |
+| FastClock | ⏱️ Railway operations fast clock. |
 
 ---
 
