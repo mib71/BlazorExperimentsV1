@@ -1,0 +1,101 @@
+﻿@page "/"
+
+<PageTitle>Split The Bill</PageTitle>
+
+<div class="container py-5" style="max-width: 480px;">
+
+    <h1 class="text-center mb-4">Split The Bill</h1>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <label class="form-label fw-semibold">Expense</label>
+            <input @bind="bill.Expense" type="number" class="form-control" placeholder="0.00" />
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-semibold">Tip</span>
+                <span class="badge bg-secondary fs-6">@(bill.Tip.HasValue ? $"{bill.Tip} %" : "--")</span>
+            </div>
+            <div class="d-grid mb-2">
+                <button class="btn @(bill.Tip == 0 ? "btn-danger" : "btn-outline-danger")" @onclick="() => GiveTip(0)">No tip</button>
+            </div>
+            <div class="d-flex gap-2 mb-2">
+                <button class="btn @(bill.Tip == 1 ? "btn-success" : "btn-outline-success") flex-fill" @onclick="() => GiveTip(1)">1%</button>
+                <button class="btn @(bill.Tip == 2 ? "btn-success" : "btn-outline-success") flex-fill" @onclick="() => GiveTip(2)">2%</button>
+                <button class="btn @(bill.Tip == 5 ? "btn-success" : "btn-outline-success") flex-fill" @onclick="() => GiveTip(5)">5%</button>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn @(bill.Tip == 10 ? "btn-success" : "btn-outline-success") flex-fill" @onclick="() => GiveTip(10)">10%</button>
+                <button class="btn @(bill.Tip == 15 ? "btn-success" : "btn-outline-success") flex-fill" @onclick="() => GiveTip(15)">15%</button>
+                <button class="btn @(bill.Tip == 20 ? "btn-success" : "btn-outline-success") flex-fill" @onclick="() => GiveTip(20)">20%</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">Total</span>
+            <span class="fs-5">@(bill.Total.HasValue? Round(bill.Total.Value) : "--")</span>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <label class="form-label fw-semibold">Split on</label>
+            <input @bind="bill.Split" type="number" class="form-control" placeholder="1" />
+        </div>
+    </div>
+
+    <div class="d-grid mb-3">
+        <button class="btn btn-success btn-lg" @onclick="SplitIt">Split it!</button>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">Each pays</span>
+            <span class="fs-4 fw-bold">@(bill.Sum.HasValue? Round(bill.Sum.Value) : "--")</span>
+        </div>
+    </div>
+
+    <div class="d-grid">
+        <button class="btn btn-outline-secondary" @onclick="Reset">Clear</button>
+    </div>
+
+</div>
+
+@code {
+    private Bill bill = new();
+
+    private class Bill
+    {
+        public decimal Expense { get; set; }
+        public decimal? Tip { get; set; }
+        public int Split { get; set; }
+        public decimal? Total { get; set; }
+        public decimal? Sum { get; set; }
+    }
+
+    private static string Round(decimal value) =>
+        decimal.Round(value, 2, MidpointRounding.AwayFromZero).ToString();
+
+    private void GiveTip(decimal tip)
+    {
+        bill.Tip = tip;
+        bill.Total = bill.Expense * (tip / 100 + 1);
+        if (bill.Split >= 1)
+            SplitIt();
+    }
+
+    private void SplitIt()
+    {
+        if (!bill.Tip.HasValue)
+            bill.Total = bill.Expense;
+        if (bill.Split >= 1)
+            bill.Sum = bill.Total / bill.Split;
+    }
+
+    private void Reset() => bill = new();
+}
