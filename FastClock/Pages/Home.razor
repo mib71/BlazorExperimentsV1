@@ -1,0 +1,164 @@
+﻿@page "/"
+@implements IDisposable
+@using FastClock.Models
+@using System.Diagnostics
+
+<PageTitle>FastClock</PageTitle>
+
+<div class="vh-100 d-flex flex-column align-items-center justify-content-center bg-body">
+
+    @* ── Settings panel ── *@
+    @if (showSettings)
+    {
+        <div class="card bg-body border-secondary mb-4">
+            <div class="card-header border-secondary text-center text-secondary fw-light">
+                Settings
+            </div>
+            <div class="card-body">
+
+                <div class="row g-3 justify-content-center mb-3">
+                    <div class="col-auto">
+                        <label class="form-label text-secondary small">Hours</label>
+                        <input @bind="clock.Hour" type="number" min="0" max="23"
+                               class="form-control form-control-sm text-center bg-body text-warning border-secondary" />
+                    </div>
+                    <div class="col-auto">
+                        <label class="form-label text-secondary small">Minutes</label>
+                        <input @bind="clock.Minute" type="number" min="0" max="59"
+                               class="form-control form-control-sm text-center bg-body text-warning border-secondary" />
+                    </div>
+                    <div class="col-auto">
+                        <label class="form-label text-secondary small">Seconds</label>
+                        <input @bind="clock.Second" type="number" min="0" max="59"
+                               class="form-control form-control-sm text-center bg-body text-warning border-secondary" />
+                    </div>
+                </div>
+
+                <div class="row g-3 justify-content-center mb-3">
+                    <div class="col-auto">
+                        <label class="form-label text-secondary small">Speed</label>
+                        <select @onchange="SetSpeed" class="form-select form-select-sm bg-body text-warning border-secondary">
+                            <option value="1" selected="@(speedRatio == 1)">1 : 1</option>
+                            <option value="2" selected="@(speedRatio == 2)">2 : 1</option>
+                            <option value="3" selected="@(speedRatio == 3)">3 : 1</option>
+                            <option value="4" selected="@(speedRatio == 4)">4 : 1</option>
+                            <option value="6" selected="@(speedRatio == 6)">6 : 1</option>
+                            <option value="12" selected="@(speedRatio == 12)">12 : 1</option>
+                            <option value="24" selected="@(speedRatio == 24)">24 : 1</option>
+                        </select>
+                    </div>
+                    <div class="col-auto d-flex align-items-end">
+                        <div class="form-check mb-1">
+                            <input @bind="showSeconds" class="form-check-input" type="checkbox" id="incSec" />
+                            <label class="form-check-label text-secondary small" for="incSec">
+                                Show seconds
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="card-footer border-secondary text-center">
+                <button class="btn btn-outline-secondary btn-sm" @onclick="ToggleSettings">Close</button>
+            </div>
+        </div>
+    }
+
+    @* ── Clock face ── *@
+    <div class="text-center mb-4">
+        <div class="fw-bold @(clockRunning ? "text-danger" : "text-warning")"
+             style="font-family:'Courier New',monospace; font-size:clamp(5rem,18vw,12rem); line-height:1; letter-spacing:0.04em;">
+            @(showSeconds? clock.TimeIncSec() : clock.TimeExSec())
+        </div>
+        <div class="text-secondary mt-2" style="letter-spacing:0.3em;">@speedLabel</div>
+    </div>
+
+    @* ── Controls ── *@
+    <div class="d-flex gap-2 align-items-center">
+        <button class="btn @(clockRunning ? "btn-danger" : "btn-success") btn-lg px-5 fw-semibold"
+                @onclick="ToggleClock">
+            @(clockRunning ? "STOP" : "START")
+        </button>
+        @if (!clockRunning)
+        {
+            <button class="btn btn-outline-secondary" @onclick="ToggleSettings" title="Settings">
+                <i class="bi bi-gear-fill"></i>
+            </button>
+        }
+    </div>
+
+    <div class="mt-5 text-secondary" style="font-size:0.65rem; letter-spacing:0.35em;">
+        F11 &nbsp;·&nbsp; TOGGLE FULL SCREEN
+    </div>
+
+</div>
+
+@code {
+    private FastClockTime clock = new(20, 15, 0);
+    private bool clockRunning;
+    private bool showSettings;
+    private bool showSeconds = true;
+    private int speedRatio = 1;
+    private string speedLabel = "1 : 1";
+
+    private CancellationTokenSource? cts;
+
+    private void ToggleClock()
+    {
+        if (clockRunning) StopClock();
+        else StartClock();
+    }
+
+    private void StartClock()
+    {
+        if (clockRunning) return;
+        clockRunning = true;
+        showSettings = false;
+        cts = new CancellationTokenSource();
+        _ = RunLoopAsync(cts.Token);
+    }
+
+    private void StopClock()
+    {
+        clockRunning = false;
+        cts?.Cancel();
+    }
+
+    private async Task RunLoopAsync(CancellationToken ct)
+    {
+        var sw = Stopwatch.StartNew();
+        long tickCount = 0;
+
+        while (!ct.IsCancellationRequested)
+        {
+            tickCount++;
+            long targetMs = tickCount * 1000L / speedRatio;
+            long delayMs = targetMs - sw.ElapsedMilliseconds;
+
+            if (delayMs > 0)
+                await Task.Delay((int)delayMs, ct).ConfigureAwait(false);
+
+            if (ct.IsCancellationRequested) break;
+
+            clock.Tick();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void SetSpeed(ChangeEventArgs e)
+    {
+        if (!int.TryParse(e.Value?.ToString(), out int ratio)) return;
+        speedRatio = ratio;
+        speedLabel = $"{ratio} : 1";
+
+        if (clockRunning)
+        {
+            StopClock();
+            StartClock();
+        }
+    }
+
+    private void ToggleSettings() => showSettings = !showSettings;
+
+    public void Dispose() => cts?.Cancel();
+}
