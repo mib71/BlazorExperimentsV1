@@ -43,4 +43,4 @@ Then open your browser at the URL shown in the terminal.
 
 ## License
 
-MIT
+This project is licensed under the [MIT License](LICENSE).
