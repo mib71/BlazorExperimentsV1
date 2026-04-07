@@ -3,7 +3,7 @@
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
 ![Blazor](https://img.shields.io/badge/Blazor-WebAssembly-512BD4?logo=blazor)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Apps](https://img.shields.io/badge/apps-2-blue)
+![Apps](https://img.shields.io/badge/apps-3-blue)
 
 A collection of small, self-contained Blazor WebAssembly applications — built for the joy of it.
 
@@ -18,6 +18,7 @@ The measure of success is whether building it was fun.
 |-----|-------------|
 | SplitTheBill | 💸 Split a bill evenly across a group, with optional tip. |
 | FastClock | ⏱️ Railway operations fast clock. |
+| EmojiToIcon | ⚙️ Turn any emoji into a set of PNG icons. |
 
 ---
 
