@@ -2,4 +2,5 @@
   <Project Path="EmojiToIcon/EmojiToIcon.csproj" Id="2e70624a-4c69-469a-af2c-d94fc07229df" />
   <Project Path="FastClock/FastClock.csproj" Id="f0d54251-b7a8-4cfc-9c65-a0c07accc734" />
   <Project Path="SplitTheBill/SplitTheBill.csproj" Id="1b9f6be5-6524-4f81-82cf-bdd19f568012" />
+  <Project Path="TypingGame/TypingGame.csproj" Id="d19d02c4-e5d2-43f1-9f13-ce1f9389a52c" />
 </Solution>

@@ -1,0 +1,330 @@
+﻿@page "/"
+@inject HttpClient Http
+@implements IDisposable
+
+<PageTitle>Typing Game</PageTitle>
+
+<div class="top-bar">
+    @if (_wordLists is not null)
+    {
+        <div class="language-picker">
+            <button class="icon-btn" @onclick="ToggleLanguageMenu" title="Switch language" aria-haspopup="listbox" aria-expanded="@_languageMenuOpen">
+                @((MarkupString)GetLanguageFlag(_language))
+            </button>
+
+            @if (_languageMenuOpen)
+            {
+                <ul class="language-menu" role="listbox">
+                    @foreach (var code in _wordLists.Keys)
+                    {
+                        var languageCode = code;
+                        <li>
+                            <button type="button" class="language-option" @onclick="() => SelectLanguage(languageCode)">
+                                @((MarkupString)GetLanguageFlag(languageCode))
+                                <span>@GetLanguageName(languageCode)</span>
+                            </button>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    }
+    <button class="icon-btn" @onclick="ToggleSettings" title="Settings" aria-label="Settings">
+        ⚙️
+    </button>
+</div>
+
+<div class="settings @(_settingsOpen ? "" : "hide")">
+    @if (!_hasStarted)
+    {
+        <p class="intro">Pick your language (top right), then choose a difficulty to start:</p>
+    }
+    <div>
+        <label for="difficulty" class="difficulty">Difficulty:</label>
+        <select id="difficulty" value="@_difficulty" @onchange="OnDifficultyChanged">
+            <option value="" disabled selected>Choose...</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+        </select>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Typing Game</h2>
+
+    @if (_wordLists is null)
+    {
+        <p>Loading words...</p>
+    }
+    else if (!_hasStarted)
+    {
+        <p>Select your language and difficulty above to begin.</p>
+    }
+    else if (_isGameOver)
+    {
+        <div class="end-game">
+            <h2>Time's up!</h2>
+            <p>Score: @_score</p>
+            <button class="restart-button" @onclick="RestartGame">Play again</button>
+        </div>
+    }
+    else
+    {
+        <small>Type the following:</small>
+        <h1>@_currentWord</h1>
+
+        <input @ref="_inputElement"
+               value="@_typedValue"
+               @oninput="OnInput"
+               autocomplete="off"
+               placeholder="Type the word here..." />
+
+        <p class="time-container">Time left: <span>@_timeLeft s</span></p>
+        <p class="score-container">Score: <span>@_score</span></p>
+    }
+</div>
+
+@code {
+    private Dictionary<string, List<string>>? _wordLists;
+    private string _language = "en";
+    private string _difficulty = string.Empty;
+    private bool _hasStarted;
+    private string _currentWord = string.Empty;
+    private string _typedValue = string.Empty;
+    private int _score;
+    private int _timeLeft = 10;
+    private bool _isGameOver;
+    private bool _settingsOpen = true;
+    private bool _languageMenuOpen;
+    private ElementReference _inputElement;
+    private bool _shouldFocusInput;
+    private PeriodicTimer? _ticker;
+    private CancellationTokenSource? _tickerCts;
+
+    private static readonly Dictionary<string, string> LanguageNames = new()
+    {
+        ["sv"] = "Swedish",
+        ["en"] = "English",
+        ["de"] = "German",
+        ["es"] = "Spanish",
+        // Add more languages here - otherwise only the language code will be displayed.
+    };
+
+    private static readonly Dictionary<string, string> LanguageFlags = new()
+    {
+        ["sv"] = SwedishFlagSvg,
+        ["en"] = UkFlagSvg,
+        ["de"] = GermanFlagSvg,
+        ["es"] = SpanishFlagSvg,
+        // Add more flags here when available - otherwise a text badge will be displayed.
+    };
+
+    private static string GetLanguageName(string code) =>
+        LanguageNames.TryGetValue(code, out var name) ? name : code.ToUpperInvariant();
+
+    private static string GetLanguageFlag(string code) =>
+        LanguageFlags.TryGetValue(code, out var svg)
+            ? svg
+            : $"""<span class="flag-fallback">{code.ToUpperInvariant()}</span>""";
+
+    private const string SwedishFlagSvg = """
+        <svg viewBox="0 0 16 10" width="22" height="14" xmlns="http://www.w3.org/2000/svg">
+            <rect width="16" height="10" fill="#006aa7"/>
+            <rect x="5" width="2" height="10" fill="#fecc00"/>
+            <rect y="4" width="16" height="2" fill="#fecc00"/>
+        </svg>
+        """;
+
+    private const string UkFlagSvg = """
+        <svg viewBox="0 0 60 30" width="26" height="14" xmlns="http://www.w3.org/2000/svg">
+            <rect width="60" height="30" fill="#00247d"/>
+            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#ffffff" stroke-width="6"/>
+            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#cf142b" stroke-width="2"/>
+            <path d="M30,0 V30 M0,15 H60" stroke="#ffffff" stroke-width="10"/>
+            <path d="M30,0 V30 M0,15 H60" stroke="#cf142b" stroke-width="6"/>
+        </svg>
+        """;
+
+    private const string GermanFlagSvg = """
+        <svg viewBox="0 0 30 18" width="24" height="14" xmlns="http://www.w3.org/2000/svg">
+            <rect width="30" height="6" y="0" fill="#000000"/>
+            <rect width="30" height="6" y="6" fill="#dd0000"/>
+            <rect width="30" height="6" y="12" fill="#ffce00"/>
+        </svg>
+        """;
+
+    private const string SpanishFlagSvg = """
+    <svg viewBox="0 0 30 20" width="24" height="16" xmlns="http://www.w3.org/2000/svg">
+        <rect width="30" height="20" fill="#aa151b"/>
+        <rect width="30" height="10" y="5" fill="#f1bf00"/>
+    </svg>
+    """;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _wordLists = await Http.GetFromJsonAsync<Dictionary<string, List<string>>>("sample-data/words.json");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_shouldFocusInput)
+        {
+            return;
+        }
+
+        _shouldFocusInput = false;
+
+        try
+        {
+            await _inputElement.FocusAsync();
+        }
+        catch (JSException)
+        {
+            // Input not focusable yet (e.g. removed again before the render caught up); ignore.
+        }
+    }
+
+    private void OnInput(ChangeEventArgs e)
+    {
+        _typedValue = e.Value?.ToString() ?? string.Empty;
+
+        if (_typedValue == _currentWord)
+        {
+            _score++;
+            _timeLeft += 4;
+            _currentWord = PickRandomWord();
+            _typedValue = string.Empty;
+        }
+    }
+
+    private void OnDifficultyChanged(ChangeEventArgs e)
+    {
+        _difficulty = e.Value?.ToString() ?? string.Empty;
+
+        if (string.IsNullOrEmpty(_difficulty))
+        {
+            return;
+        }
+
+        if (_hasStarted)
+        {
+            _currentWord = PickRandomWord();
+        }
+        else
+        {
+            StartGame();
+        }
+    }
+
+    private void StartGame()
+    {
+        _hasStarted = true;
+        _settingsOpen = false;
+        _currentWord = PickRandomWord();
+        _shouldFocusInput = true;
+        StartTicking();
+    }
+
+    private void ToggleLanguageMenu() => _languageMenuOpen = !_languageMenuOpen;
+
+    private void SelectLanguage(string code)
+    {
+        _languageMenuOpen = false;
+
+        if (code == _language)
+        {
+            return;
+        }
+
+        _language = code;
+
+        if (_hasStarted)
+        {
+            _currentWord = PickRandomWord();
+        }
+    }
+
+    private void ToggleSettings() => _settingsOpen = !_settingsOpen;
+
+    private void RestartGame()
+    {
+        _score = 0;
+        _timeLeft = 10;
+        _isGameOver = false;
+        _currentWord = PickRandomWord();
+        _typedValue = string.Empty;
+        _shouldFocusInput = true;
+        StartTicking();
+    }
+
+    private string PickRandomWord()
+    {
+        if (_wordLists is null || !_wordLists.TryGetValue(_language, out var words) || words.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var (min, max) = _difficulty switch
+        {
+            "easy" => (0, 5),
+            "medium" => (5, 8),
+            _ => (8, int.MaxValue),
+        };
+
+        var candidates = words.Where(w => w.Length >= min && w.Length <= max).ToList();
+        if (candidates.Count == 0)
+        {
+            candidates = words;
+        }
+
+        return candidates[Random.Shared.Next(candidates.Count)];
+    }
+
+    private void StartTicking()
+    {
+        StopTicking();
+        _tickerCts = new CancellationTokenSource();
+        _ticker = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        _ = TickLoopAsync(_ticker, _tickerCts.Token);
+    }
+
+    private async Task TickLoopAsync(PeriodicTimer timer, CancellationToken token)
+    {
+        try
+        {
+            while (await timer.WaitForNextTickAsync(token))
+            {
+                _timeLeft--;
+
+                if (_timeLeft <= 0)
+                {
+                    _isGameOver = true;
+                    StopTicking();
+                }
+
+                await InvokeAsync(StateHasChanged);
+
+                if (_isGameOver)
+                {
+                    break;
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected when the ticker is stopped.
+        }
+    }
+
+    private void StopTicking()
+    {
+        _tickerCts?.Cancel();
+        _tickerCts?.Dispose();
+        _tickerCts = null;
+        _ticker?.Dispose();
+        _ticker = null;
+    }
+
+    public void Dispose() => StopTicking();
+}

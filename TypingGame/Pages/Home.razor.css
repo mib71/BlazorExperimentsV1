@@ -1,0 +1,159 @@
+.top-bar {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    gap: 10px;
+    z-index: 20;
+}
+
+.icon-btn {
+    background: #ffffff;
+    color: #6026ff;
+    font-size: 20px;
+    line-height: 1;
+    padding: 8px 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.language-picker {
+    position: relative;
+}
+
+.language-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    list-style: none;
+    margin: 0;
+    padding: 4px;
+    min-width: 140px;
+    z-index: 30;
+}
+
+.language-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    color: #333333;
+    text-align: left;
+}
+
+    .language-option:hover,
+    .language-option:focus-visible {
+        background: #f0edff;
+    }
+
+.flag-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 16px;
+    background: #6026ff;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 2px;
+}
+
+.settings {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #6026ff;
+    height: 70px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(0);
+    transition: transform 0.3s ease-in-out;
+    z-index: 10;
+}
+
+    .settings.hide {
+        transform: translateY(-100%);
+    }
+
+.intro {
+    margin: 0 0 8px;
+    font-size: 13px;
+    max-width: 240px;
+    text-align: center;
+}
+
+.difficulty {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-right: 5px;
+    font-weight: 500;
+}
+
+.container {
+    background-color: #6026ff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+    position: relative;
+    text-align: center;
+    width: 500px;
+    max-width: 90vw;
+}
+
+h2 {
+    font-family: "Righteous", cursive;
+    font-size: 40px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 8px;
+    border-radius: 4px;
+    margin: 0 0 40px;
+}
+
+h1 {
+    margin: 0;
+    padding: 10px;
+    color: #ffde17;
+    word-break: break-word;
+}
+
+input {
+    border: 0;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 300px;
+    max-width: 100%;
+    padding: 12px 20px;
+    margin-top: 7px;
+}
+
+.score-container,
+.time-container {
+    display: inline-block;
+    margin: 8px 12px 0;
+    font-weight: 500;
+}
+
+.restart-button {
+    background: #ffde17;
+    color: #6026ff;
+    font-weight: 700;
+    margin-top: 10px;
+}
