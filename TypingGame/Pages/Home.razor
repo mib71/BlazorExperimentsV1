@@ -108,6 +108,13 @@
         ["en"] = "English",
         ["de"] = "German",
         ["es"] = "Spanish",
+        ["fr"] = "French",
+        ["it"] = "Italian",
+        ["pt"] = "Portuguese",
+        ["nl"] = "Dutch",
+        ["nb"] = "Norwegian",
+        ["da"] = "Danish",
+        ["pl"] = "Polish",
         // Add more languages here - otherwise only the language code will be displayed.
     };
 
@@ -117,6 +124,13 @@
         ["en"] = UkFlagSvg,
         ["de"] = GermanFlagSvg,
         ["es"] = SpanishFlagSvg,
+        ["fr"] = FrenchFlagSvg,
+        ["it"] = ItalianFlagSvg,
+        ["pt"] = PortugueseFlagSvg,
+        ["nl"] = DutchFlagSvg,
+        ["nb"] = NorwegianFlagSvg,
+        ["da"] = DanishFlagSvg,
+        ["pl"] = PolishFlagSvg,
         // Add more flags here when available - otherwise a text badge will be displayed.
     };
 
@@ -129,35 +143,91 @@
             : $"""<span class="flag-fallback">{code.ToUpperInvariant()}</span>""";
 
     private const string SwedishFlagSvg = """
-        <svg viewBox="0 0 16 10" width="22" height="14" xmlns="http://www.w3.org/2000/svg">
-            <rect width="16" height="10" fill="#006aa7"/>
-            <rect x="5" width="2" height="10" fill="#fecc00"/>
-            <rect y="4" width="16" height="2" fill="#fecc00"/>
-        </svg>
-        """;
+    <svg viewBox="0 0 16 10" width="22" height="14" xmlns="http://www.w3.org/2000/svg">
+        <rect width="16" height="10" fill="#006aa7"/>
+        <rect x="5" width="2" height="10" fill="#fecc00"/>
+        <rect y="4" width="16" height="2" fill="#fecc00"/>
+    </svg>
+    """;
 
     private const string UkFlagSvg = """
-        <svg viewBox="0 0 60 30" width="26" height="14" xmlns="http://www.w3.org/2000/svg">
-            <rect width="60" height="30" fill="#00247d"/>
-            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#ffffff" stroke-width="6"/>
-            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#cf142b" stroke-width="2"/>
-            <path d="M30,0 V30 M0,15 H60" stroke="#ffffff" stroke-width="10"/>
-            <path d="M30,0 V30 M0,15 H60" stroke="#cf142b" stroke-width="6"/>
-        </svg>
-        """;
+    <svg viewBox="0 0 60 30" width="26" height="14" xmlns="http://www.w3.org/2000/svg">
+        <rect width="60" height="30" fill="#00247d"/>
+        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#ffffff" stroke-width="6"/>
+        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#cf142b" stroke-width="2"/>
+        <path d="M30,0 V30 M0,15 H60" stroke="#ffffff" stroke-width="10"/>
+        <path d="M30,0 V30 M0,15 H60" stroke="#cf142b" stroke-width="6"/>
+    </svg>
+    """;
 
     private const string GermanFlagSvg = """
-        <svg viewBox="0 0 30 18" width="24" height="14" xmlns="http://www.w3.org/2000/svg">
-            <rect width="30" height="6" y="0" fill="#000000"/>
-            <rect width="30" height="6" y="6" fill="#dd0000"/>
-            <rect width="30" height="6" y="12" fill="#ffce00"/>
-        </svg>
-        """;
+    <svg viewBox="0 0 30 18" width="24" height="14" xmlns="http://www.w3.org/2000/svg">
+        <rect width="30" height="6" y="0" fill="#000000"/>
+        <rect width="30" height="6" y="6" fill="#dd0000"/>
+        <rect width="30" height="6" y="12" fill="#ffce00"/>
+    </svg>
+    """;
 
     private const string SpanishFlagSvg = """
     <svg viewBox="0 0 30 20" width="24" height="16" xmlns="http://www.w3.org/2000/svg">
         <rect width="30" height="20" fill="#aa151b"/>
         <rect width="30" height="10" y="5" fill="#f1bf00"/>
+    </svg>
+    """;
+
+    private const string FrenchFlagSvg = """
+    <svg viewBox="0 0 30 20" width="24" height="16" xmlns="http://www.w3.org/2000/svg">
+        <rect width="10" height="20" fill="#0055a4"/>
+        <rect x="10" width="10" height="20" fill="#ffffff"/>
+        <rect x="20" width="10" height="20" fill="#ef4135"/>
+    </svg>
+    """;
+
+    private const string ItalianFlagSvg = """
+    <svg viewBox="0 0 30 20" width="24" height="16" xmlns="http://www.w3.org/2000/svg">
+        <rect width="10" height="20" fill="#008c45"/>
+        <rect x="10" width="10" height="20" fill="#f4f5f0"/>
+        <rect x="20" width="10" height="20" fill="#cd212a"/>
+    </svg>
+    """;
+
+    private const string PortugueseFlagSvg = """
+    <svg viewBox="0 0 30 20" width="24" height="16" xmlns="http://www.w3.org/2000/svg">
+        <rect width="12" height="20" fill="#006600"/>
+        <rect x="12" width="18" height="20" fill="#ff0000"/>
+    </svg>
+    """;
+
+    private const string DutchFlagSvg = """
+    <svg viewBox="0 0 30 21" width="24" height="16" xmlns="http://www.w3.org/2000/svg">
+        <rect width="30" height="7" y="0" fill="#ae1c28"/>
+        <rect width="30" height="7" y="7" fill="#ffffff"/>
+        <rect width="30" height="7" y="14" fill="#21468b"/>
+    </svg>
+    """;
+
+    private const string NorwegianFlagSvg = """
+    <svg viewBox="0 0 22 16" width="24" height="16" xmlns="http://www.w3.org/2000/svg">
+        <rect width="22" height="16" fill="#ba0c2f"/>
+        <rect x="6" width="4" height="16" fill="#ffffff"/>
+        <rect y="6" width="22" height="4" fill="#ffffff"/>
+        <rect x="7" width="2" height="16" fill="#00205b"/>
+        <rect y="7" width="22" height="2" fill="#00205b"/>
+    </svg>
+    """;
+
+    private const string DanishFlagSvg = """
+    <svg viewBox="0 0 22 16" width="24" height="16" xmlns="http://www.w3.org/2000/svg">
+        <rect width="22" height="16" fill="#c60c30"/>
+        <rect x="6" width="4" height="16" fill="#ffffff"/>
+        <rect y="6" width="22" height="4" fill="#ffffff"/>
+    </svg>
+    """;
+
+    private const string PolishFlagSvg = """
+    <svg viewBox="0 0 30 20" width="24" height="16" xmlns="http://www.w3.org/2000/svg">
+        <rect width="30" height="10" y="0" fill="#ffffff"/>
+        <rect width="30" height="10" y="10" fill="#dc143c"/>
     </svg>
     """;
 
@@ -192,7 +262,7 @@
         if (_typedValue == _currentWord)
         {
             _score++;
-            _timeLeft += 4;
+            _timeLeft += 3;
             _currentWord = PickRandomWord();
             _typedValue = string.Empty;
         }
